@@ -1,0 +1,87 @@
+* {
+  margin: 0;
+  padding: 0;
+  color: #00CC00;
+}
+
+html {
+  padding: 0.6em;
+  background-color: black;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+#intro {
+  font-family: monospace, 'Share Tech Mono';
+  margin: 0 auto;
+  text-align: center;
+}
+
+#intro-center {
+  display: inline-block;
+  text-align: justify;
+}
+
+#intro-name {
+  white-space: pre;
+  font-size: 1.0em;
+  line-height: 1.0em;
+}
+
+#intro-links {
+  font-size: 1em;
+  line-height: 1.4em;
+  text-align: center;
+  padding: 10px;
+}
+
+#intro-links a {
+  font-family: 'Share Tech Mono', monospace;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.link {
+  margin: 0 10px;
+}
+
+#intro-ucla {
+  white-space: pre;
+  font-size: 0.5em;
+  line-height: 0.9em;
+}
+
+#console {
+  font-family: 'Share Tech Mono', monospace;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  background-color: inherit;
+  border: none;
+}
+
+#old-console-io, #curr-input-line, #user-id {
+  font-size: 1em;
+  line-height: 1.4em;
+  display: inline-block;
+}
+
+#old-console-io {
+  max-height: 100vh;
+}
+
+#curr-input-line {
+  background-color: inherit;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+
+  outline: none;
+  border: none;
+
+  /* Hack for chrome bug */
+  padding-right: 0.1px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
