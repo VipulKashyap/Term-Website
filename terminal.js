@@ -1,4 +1,5 @@
 var userID = 'guest@vip:/web>  ';
+var oldConsole, consoleInputLine;
 
 // jQuery plugin logic adapted from:
 // http://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity
@@ -23,11 +24,9 @@ var consoleInputHandler = function (e) {
   var key = e.which || e.keyCode || 0;
   if(key == 13)
   {
-    var oldConsole = document.getElementById("old-console-io");
-    var inputLine = document.getElementById("curr-input-line");
-    oldConsole.innerHTML = oldConsole.innerHTML + "<br>" + userID + inputLine.innerHTML;
-    var cmd = inputLine.textContent.replace(/\s\s+/g, ' ').trim();
-    inputLine.innerHTML = "";
+    oldConsole.innerHTML = oldConsole.innerHTML + "<br>" + userID + consoleInputLine.innerHTML;
+    var cmd = consoleInputLine.textContent.replace(/\s\s+/g, ' ').trim();
+    consoleInputLine.innerHTML = "";
     document.body.scrollTop = document.body.scrollHeight;
     runCommand(cmd);
     document.body.scrollTop = document.body.scrollHeight;
@@ -37,6 +36,10 @@ var consoleInputHandler = function (e) {
 }
 
 $(function() {
+
+  consoleInputLine = document.getElementById("curr-input-line");
+  oldConsole = document.getElementById("old-console-io");
+
   screenSetup();
 
   $("html").click( function(event) {
@@ -52,7 +55,6 @@ $(function() {
   });
 
   $("#curr-input-line").keypress(consoleInputHandler);
-
 });
 
 var char = 0;
@@ -85,25 +87,46 @@ function typeAndRunCmd(str) {
   document.body.scrollTop = document.body.scrollHeight;
 }
 
-function getFileContent(path) {
-  if(!path.startsWith("http:"))
-    path = "ht"
+var result;
+function getFileContent(path, callback) {
+  $.get( path , function( data ) {
+    result = data;
+  })
+  .fail(function() {
+    result = "File retrieval failed!";
+  })
+  .done(
+    callback
+  );
+}
+
+fileContentReadCallback = function (){
+  oldConsole.innerHTML = oldConsole.innerHTML + "<br>" + result;
+  consoleInputLine.setAttribute("contenteditable", "true");
 }
 
 function runCommand(str) {
   if(/^\s*$/.test(str))
-    return false;
+    return -2;
+
   var cmds = str.split(" ");
-  var oldConsole = document.getElementById("old-console-io");
-  var inputLine = document.getElementById("curr-input-line");
-  var output = "";
+
+  consoleInputLine.setAttribute("contenteditable", "true");
+
   switch (cmds[0]) {
     case "cat":
-
-      break;
+      if(cmds.length < 2)
+      {
+        oldConsole.innerHTML += "<br>" + cmds[0] + ": missing file path";
+        return -1;
+      }
+      getFileContent(cmds[1], fileContentReadCallback);
+      return 0;
     default:
-      output = cmds[0] + ": command not found";
+      oldConsole.innerHTML += "<br>" + cmds[0] + ": command not found";
   }
-  oldConsole.innerHTML = oldConsole.innerHTML + "<br>" + output;
-  return true;
+
+  consoleInputLine.setAttribute("contenteditable", "true");
+
+  return 0;
 }
