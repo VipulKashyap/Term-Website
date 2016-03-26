@@ -10,6 +10,27 @@ html {
   font-family: 'Share Tech Mono', monospace;
 }
 
+table {
+  display: inline-block;
+  font-size: 1.0em;
+  line-height: 1.0em;
+  margin-bottom: -0.2em;
+}
+
+td {
+  width: 13em;
+}
+
+td:hover {
+  text-decoration: underline;
+}
+
+.console-list {
+  -webkit-columns: 4 13em; /* Chrome, Safari, Opera */
+  -moz-columns: 4 13em; /* Firefox */
+  columns: 4 13em;
+}
+
 #intro {
   font-family: monospace, 'Share Tech Mono';
   margin: 0 auto;
@@ -59,7 +80,7 @@ html {
   border: none;
 }
 
-#old-console-io, #curr-input-line, #user-id {
+#old-console-io, #curr-input-line, #input-starter {
   font-size: 1em;
   line-height: 1.4em;
   display: inline-block;

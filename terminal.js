@@ -1,7 +1,9 @@
 var userID = 'guest';
 var currDir = '';
-var oldConsole, consoleInputLine;
-var diskData;
+var oldConsole, consoleInputLine, inputStarterDiv;
+var diskData = [];
+var currDirData;
+var lineStarter = "";
 
 function getLineStarter()
 {
@@ -10,73 +12,89 @@ function getLineStarter()
 
 function printToConsole(data)
 {
-  oldConsole.innerHTML += '<br>' + data;
+  oldConsole.appendChild(document.createElement('br'));
+  oldConsole.appendChild(document.createTextNode(data));
 }
 
 function getFile(name)
 {
-  for(i in diskData)
+  for(i in currDirData)
   {
-    if(diskData[i].name == name)
-      return diskData[i];
+    if(currDirData[i].name == name && currDirData[i].type == "file")
+      return currDirData[i];
   }
   return undefined;
 }
 
-// jQuery plugin logic adapted from:
-// http://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity
-(function($){
-    $.fn.focusToEnd = function() {
-      this.focus();
-      var range = document.createRange();
-      range.selectNodeContents(this.get(0));
-      range.collapse(false);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    };
-})(jQuery);
+function getDirectory(name)
+{
+  for(i in currDirData)
+  {
+    if(currDirData[i].name == name && currDirData[i].type == "dir")
+      return currDirData[i];
+  }
+  return undefined;
+}
 
-function screenSetup(){
-  $("#user-id").html(getLineStarter());
-  $("#curr-input-line").focus();
+function submitCommandInput()
+{
+  printToConsole(lineStarter + consoleInputLine.innerHTML);
+  var cmd = consoleInputLine.textContent.replace(/\s\s+/g, ' ').trim();
+  consoleInputLine.innerHTML = "";
+  consoleInputLine.scrollIntoView();
+  runCommand(cmd);
+  consoleInputLine.scrollIntoView();
 }
 
 var consoleInputHandler = function (e) {
   var key = e.which || e.keyCode || 0;
   if(key == 13)
   {
-    printToConsole(getLineStarter() + consoleInputLine.innerHTML);
-    var cmd = consoleInputLine.textContent.replace(/\s\s+/g, ' ').trim();
-    consoleInputLine.innerHTML = "";
-    document.body.scrollTop = document.body.scrollHeight;
-    runCommand(cmd);
-    document.body.scrollTop = document.body.scrollHeight;
+    submitCommandInput();
     return false;
   }
   return true;
 }
 
-$(function() {
-
+function initGlobalVars()
+{
   consoleInputLine = document.getElementById("curr-input-line");
   oldConsole = document.getElementById("old-console-io");
+  inputStarterDiv = document.getElementById("input-starter");
+  lineStarter = getLineStarter();
   $.ajax({
-        type: "GET",
-        url: "https://api.github.com/repos/VipulKashyap/Term-Website/contents/",
-        dataType: "json",
-        success: function(result) {
-          diskData = result;
-        },
-        failure: function() {
-          printToConsole("Failed to get file list from server.");
-        }
-    });
+      type: "GET",
+      url: "https://api.github.com/repos/VipulKashyap/Term-Website/contents/",
+      dataType: "json",
+      success: function(result) {
+        currDirData = result;
+      },
+      error: function() {
+        printToConsole("Failed to get file list from server.");
+      }
+  });
+}
+
+function screenSetup(){
+  inputStarterDiv.innerHTML = lineStarter;
+  consoleInputLine.focus();
+}
+
+$(function() {
+
+  initGlobalVars();
 
   screenSetup();
 
+  // http://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity
   $("html").click( function(event) {
-    $("#curr-input-line").focusToEnd();
+    consoleInputLine.focus();
+    var range = document.createRange();
+    range.selectNodeContents(consoleInputLine);
+    range.collapse(false);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
   });
 
   $("#curr-input-line").click(function(event){
@@ -91,23 +109,20 @@ $(function() {
 });
 
 var char = 0;
-var timeOut;
+var cmdTypeAndRunTimer;
 function typeAndRunCmdHelper(str) {
     var humanize = Math.round(Math.random() * (85 - 30)) + 30;
-    timeOut = setTimeout(function() {
+
+    cmdTypeAndRunTimer = setTimeout(function() {
         char++;
-        var type = str.substring(0, char);
-        $("#curr-input-line").html(type + '|');
+        consoleInputLine.innerHTML = str.substring(0, char) + '|';
         typeAndRunCmdHelper(str);
 
         if (char == str.length) {
-            $("#curr-input-line").html($("#curr-input-line").html().slice(0, -1));
-            clearTimeout(timeOut);
-            $("#curr-input-line").focus();
-            var e = jQuery.Event("keypress");
-            e.which = 13;
-            e.keyCode = 13;
-            $("#curr-input-line").trigger(e);
+            consoleInputLine.innerHTML = consoleInputLine.innerHTML.slice(0, -1);
+            clearTimeout(cmdTypeAndRunTimer);
+            consoleInputLine.focus();
+            submitCommandInput();
         }
 
     }, humanize);
@@ -115,9 +130,9 @@ function typeAndRunCmdHelper(str) {
 
 function typeAndRunCmd(str) {
   char = 0;
-  clearTimeout(timeOut);
+  clearTimeout(cmdTypeAndRunTimer);
   typeAndRunCmdHelper(str);
-  document.body.scrollTop = document.body.scrollHeight;
+  consoleInputLine.scrollIntoView();
 }
 
 var result;
@@ -133,39 +148,42 @@ function getFileContent(path, callback) {
   );
 }
 
-catReadCallback = function (){
-  printToConsole(result);
-  consoleInputLine.setAttribute("contenteditable", "true");
-}
-
 function runCommand(str) {
   if(/^\s*$/.test(str))
     return -2;
 
   var cmds = str.split(" ");
 
-  consoleInputLine.setAttribute("contenteditable", "true");
+  consoleInputEnabled(false);
 
   switch (cmds[0]) {
+    case "clear":
+      return cmd_clear(cmds);
     case "cat":
-      if(cmds.length < 2)
-      {
-        printToConsole(cmds[0] + ": missing file path");
-        return -1;
-      }
-      var file = getFile(cmds[1]);
-      if(file)
-        getFileContent(file.download_url, catReadCallback);
-      else {
-        printToConsole(cmds[0] + ": " + cmds[1] + ": No such file or directory");
-        break;
-      }
-      return 0;
+      return cmd_cat(cmds);
+    case "ls":
+      return cmd_ls(cmds);
+    case "cd":
+      return cmd_cd(cmds);
     default:
       printToConsole(cmds[0] + ": command not found");
   }
 
-  consoleInputLine.setAttribute("contenteditable", "true");
-
+  consoleInputEnabled(true);
   return 0;
+}
+
+function consoleInputEnabled(state)
+{
+  if(state)
+  {
+    consoleInputLine.setAttribute("contenteditable", "true");
+    consoleInputLine.style.display = 'inline-block';
+    inputStarterDiv.style.display = 'inline-block';
+    consoleInputLine.scrollIntoView();
+  }else{
+    consoleInputLine.setAttribute("contenteditable", "false");
+    consoleInputLine.style.display = 'none';
+    inputStarterDiv.style.display = 'none';
+  }
 }
