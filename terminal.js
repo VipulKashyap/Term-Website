@@ -1,5 +1,27 @@
-var userID = 'guest@vip:/web>  ';
+var userID = 'guest';
+var currDir = '';
 var oldConsole, consoleInputLine;
+var diskData;
+
+function getLineStarter()
+{
+  return userID + '@vip:/web' + currDir + '>  ';
+}
+
+function printToConsole(data)
+{
+  oldConsole.innerHTML += '<br>' + data;
+}
+
+function getFile(name)
+{
+  for(i in diskData)
+  {
+    if(diskData[i].name == name)
+      return diskData[i];
+  }
+  return undefined;
+}
 
 // jQuery plugin logic adapted from:
 // http://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity
@@ -16,7 +38,7 @@ var oldConsole, consoleInputLine;
 })(jQuery);
 
 function screenSetup(){
-  $("#user-id").html(userID);
+  $("#user-id").html(getLineStarter());
   $("#curr-input-line").focus();
 }
 
@@ -24,7 +46,7 @@ var consoleInputHandler = function (e) {
   var key = e.which || e.keyCode || 0;
   if(key == 13)
   {
-    oldConsole.innerHTML = oldConsole.innerHTML + "<br>" + userID + consoleInputLine.innerHTML;
+    printToConsole(getLineStarter() + consoleInputLine.innerHTML);
     var cmd = consoleInputLine.textContent.replace(/\s\s+/g, ' ').trim();
     consoleInputLine.innerHTML = "";
     document.body.scrollTop = document.body.scrollHeight;
@@ -39,6 +61,17 @@ $(function() {
 
   consoleInputLine = document.getElementById("curr-input-line");
   oldConsole = document.getElementById("old-console-io");
+  $.ajax({
+        type: "GET",
+        url: "https://api.github.com/repos/VipulKashyap/Term-Website/contents/",
+        dataType: "json",
+        success: function(result) {
+          diskData = result;
+        },
+        failure: function() {
+          printToConsole("Failed to get file list from server.");
+        }
+    });
 
   screenSetup();
 
@@ -100,8 +133,8 @@ function getFileContent(path, callback) {
   );
 }
 
-fileContentReadCallback = function (){
-  oldConsole.innerHTML = oldConsole.innerHTML + "<br>" + result;
+catReadCallback = function (){
+  printToConsole(result);
   consoleInputLine.setAttribute("contenteditable", "true");
 }
 
@@ -117,13 +150,19 @@ function runCommand(str) {
     case "cat":
       if(cmds.length < 2)
       {
-        oldConsole.innerHTML += "<br>" + cmds[0] + ": missing file path";
+        printToConsole(cmds[0] + ": missing file path");
         return -1;
       }
-      getFileContent(cmds[1], fileContentReadCallback);
+      var file = getFile(cmds[1]);
+      if(file)
+        getFileContent(file.download_url, catReadCallback);
+      else {
+        printToConsole(cmds[0] + ": " + cmds[1] + ": No such file or directory");
+        break;
+      }
       return 0;
     default:
-      oldConsole.innerHTML += "<br>" + cmds[0] + ": command not found";
+      printToConsole(cmds[0] + ": command not found");
   }
 
   consoleInputLine.setAttribute("contenteditable", "true");
