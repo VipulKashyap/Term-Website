@@ -12,16 +12,16 @@ html {
 
 table {
   display: inline-block;
-  font-size: 1.0em;
-  line-height: 1.0em;
-  margin-bottom: -0.2em;
+  font-size: 1em;
+  line-height: 1.4em;
+  margin-bottom: -0.4em;
 }
 
 td {
   width: 13em;
 }
 
-td:hover {
+.console-link:hover {
   text-decoration: underline;
 }
 
@@ -55,6 +55,10 @@ td:hover {
   padding: 10px;
 }
 
+.cmd-output {
+  font-family: 'Share Tech Mono', monospace;
+}
+
 #intro-links a {
   font-family: 'Share Tech Mono', monospace;
   text-decoration: none;
@@ -62,6 +66,7 @@ td:hover {
 }
 
 .link {
+  cursor: pointer;
   margin: 0 10px;
 }
 
