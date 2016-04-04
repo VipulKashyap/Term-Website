@@ -19,6 +19,7 @@ table {
 
 td {
   width: 13em;
+  vertical-align: top;
 }
 
 .console-link:hover {
@@ -57,6 +58,8 @@ td {
 
 .cmd-output {
   font-family: 'Share Tech Mono', monospace;
+  white-space: pre;
+  display: inline-block;
 }
 
 #intro-links a {

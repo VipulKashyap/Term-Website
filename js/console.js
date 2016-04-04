@@ -96,7 +96,7 @@ Console.prototype = {
 
   print: function (data) {
     this.consoleDiv.appendChild(document.createElement('br'));
-    this.consoleDiv.appendChild(document.createTextNode(data));
+    this.consoleDiv.appendChild(document.createTextNode(data + " "));
   },
 
   submitInput: function () {
@@ -129,7 +129,7 @@ Console.prototype = {
   },
 
   getFileContent: function (path, callback) {
-    $.get( path , callback)
+    $.get(path , callback)
     .fail(function() {
       callback("File retrieval failed!");
     });
@@ -265,10 +265,10 @@ Console.prototype = {
       this.getFileContent(file.download_url,
         function(data){
             that.print("");
-            var pre = document.createElement("pre");
-            pre.setAttribute("class", "cmd-output");
-            pre.appendChild(document.createTextNode(data));
-            that.consoleDiv.appendChild(pre);
+            var span = document.createElement("span");
+            span.setAttribute("class", "cmd-output");
+            span.appendChild(document.createTextNode(data));
+            that.consoleDiv.appendChild(span);
             that.setInputEnabled(true);
         });
     } else {
