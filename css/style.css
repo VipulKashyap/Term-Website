@@ -1,3 +1,27 @@
+/*
+Colors
+    #000000 black
+    #990000 red
+    #00a600 dull green
+    #999900 yellow
+    #0000b2 blues
+    #b200b2 dark-magenta
+    #00a6b2 sea blue
+    #bfbfbf light-gray
+    #666666 darker-gray
+    #e50000 bright red
+    #00d900 text green
+    #e5e500 banana yellow
+    #0000ff neon bruin blue
+    #e500e5 light-magenta
+    #00e5e5 light sea blue
+    #e5e5e5 lighter gray
+    
+    background_color = "#000000"
+    cursor_color = "#23ff18"
+    foreground_color = "#00ff00"
+*/
+
 * {
   margin: 0;
   padding: 0;
@@ -22,6 +46,36 @@ td {
   vertical-align: top;
 }
 
+#modal-view {
+  text-align: center;
+  position: fixed;
+  z-index: 9999;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: black;
+  border: solid #00CC00;
+  min-width: 10em;
+  padding: 0.5em;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: auto;
+  margin-top: -0.01em;
+}
+
+#modal-done-button {
+  padding: 0.3em;
+  min-width: 5em;
+  background: black;
+  border: solid #00CC00;
+  font: inherit;
+}
+
+#modal-done-button:hover {
+  background-color: #00CC00;
+  color: black;
+}
+
 .console-link:hover {
   text-decoration: underline;
 }
@@ -30,6 +84,14 @@ td {
   -webkit-columns: 4 13em; /* Chrome, Safari, Opera */
   -moz-columns: 4 13em; /* Firefox */
   columns: 4 13em;
+}
+
+.console-link .file {
+  color
+}
+
+.console-link .folder {
+
 }
 
 #intro {

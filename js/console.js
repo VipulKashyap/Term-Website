@@ -99,6 +99,16 @@ Console.prototype = {
     this.consoleDiv.appendChild(document.createTextNode(data + " "));
   },
 
+  showModalWithHTML: function (html) {
+    if(!this.modalDiv)
+    {
+      // fallback
+      return;
+    }
+
+    
+  },
+
   submitInput: function () {
     this.print(this.inputStarterString + this.inputDiv.textContent);
 
@@ -284,6 +294,13 @@ Console.prototype = {
   // ls command implementation
   cmd_ls: function(cmds){
     /*
+    <div id="pdf">
+      <object width="400" height="500" type="application/pdf" data="Files/resume.pdf" id="pdf_content" internalinstanceid="3">
+        <p>Insert your error message here, if the PDF cannot be displayed.</p>
+      </object>
+    </div>
+    */
+    /*
     var list = "";
     for(i in workingDirData)
     {
@@ -308,7 +325,7 @@ Console.prototype = {
       {
         var div = document.createElement('div');
         div.appendChild(document.createTextNode(this.workingDirData[ptr].name));
-        div.setAttribute("class", "console-link");
+        div.setAttribute("class", "console-link " + this.workingDirData[ptr].type);
         div.addEventListener("click", this.getFileCommandRunner(this.workingDirData[ptr]), false);
         td.appendChild(div);
         ptr++;
