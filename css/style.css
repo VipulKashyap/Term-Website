@@ -16,7 +16,7 @@ Colors
     #e500e5 light-magenta
     #00e5e5 light sea blue
     #e5e5e5 lighter gray
-    
+
     background_color = "#000000"
     cursor_color = "#23ff18"
     foreground_color = "#00ff00"
@@ -47,6 +47,7 @@ td {
 }
 
 #modal-view {
+  display: none;
   text-align: center;
   position: fixed;
   z-index: 9999;
@@ -54,7 +55,7 @@ td {
   margin-right: auto;
   background-color: black;
   border: solid #00CC00;
-  min-width: 10em;
+  min-width: 18em;
   padding: 0.5em;
   left: 50%;
   top: 50%;
@@ -63,15 +64,17 @@ td {
   margin-top: -0.01em;
 }
 
-#modal-done-button {
+.modal-button {
   padding: 0.3em;
+  margin: 0.6em;
+  margin-bottom: 0.4em;
   min-width: 5em;
   background: black;
   border: solid #00CC00;
   font: inherit;
 }
 
-#modal-done-button:hover {
+.modal-button:hover {
   background-color: #00CC00;
   color: black;
 }
@@ -87,7 +90,7 @@ td {
 }
 
 .console-link .file {
-  color
+
 }
 
 .console-link .folder {

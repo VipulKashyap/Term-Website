@@ -1,11 +1,24 @@
 var Console = function (prefs) {
 
+  var that = this;
+
   this.userId = prefs.userId;
   this.fileDir = prefs.fileDir;
 
   this.inputDiv = document.getElementById(prefs.inputDiv);
   this.consoleDiv = document.getElementById(prefs.consoleDiv);
   this.inputStarterDiv = document.getElementById(prefs.inputStarterDiv);
+  this.modalDiv = document.getElementById(prefs.modalDiv);
+  this.modalDataDiv = document.getElementById(prefs.modalDataDiv);
+
+  var modalCloseButton = document.createElement("button");
+  modalCloseButton.setAttribute("id", "modal-close-button");
+  modalCloseButton.setAttribute("class", "modal-button");
+  modalCloseButton.innerHTML = 'Done';
+  modalCloseButton.addEventListener("click", function(){
+    that.modalDiv.style.display = "none";
+  }, false);
+  this.modalDiv.appendChild(modalCloseButton);
 
   this.workingDirPath = '';
   this.workingDirData = {};
@@ -16,8 +29,6 @@ var Console = function (prefs) {
   this.cmdAutotyperTimer;
 
   this.inputStarterString = this.getInputStarterString();
-
-  var that = this;
 
   $.ajax({
       type: "GET",
@@ -100,13 +111,15 @@ Console.prototype = {
   },
 
   showModalWithHTML: function (html) {
-    if(!this.modalDiv)
+    if(!this.modalDataDiv)
     {
-      // fallback
+      // fallback to when modal is not defined
+      this.consoleDiv.appendChild(html);
       return;
     }
 
-    
+    this.modalDataDiv.innerHTML = html;
+    this.modalDiv.style.display = "inherit";
   },
 
   submitInput: function () {
@@ -165,6 +178,10 @@ Console.prototype = {
         return this.cmd_clear(cmds);
       case "cat":
         return this.cmd_cat(cmds);
+      case "pdfview":
+        return this.cmd_pdfview(cmds);
+      case "imgview":
+        return this.cmd_imgview(cmds);
       case "ls":
         return this.cmd_ls(cmds);
       case "cd":
@@ -239,6 +256,23 @@ Console.prototype = {
   },
 
   typeAndRunCmd: function (str) {
+
+    // Prefetching based on parameters
+    var temp = str.split(" ");
+    if(temp.length > 1){
+      /*
+      var prefetch_link = document.createElement("link");
+      prefetch_link.setAttribute("rel", "prefetch");
+      prefetch_link.setAttribute("href", "./Files/" + temp[1]);
+      prefetch_link.setAttribute("display", "none");
+      document.body.appendChild(prefetch_link);
+      */
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', "./Files/" + temp[1], false);
+      xhr.send(null);
+    }
+
     this.cmdAutoTyperCharPtr = 0;
     clearTimeout(this.cmdAutotyperTimer);
     this.typeAndRunCmdHelper(str);
@@ -291,15 +325,61 @@ Console.prototype = {
     return 0;
   },
 
+  // pdfview command implementation
+  cmd_pdfview: function(cmds){
+    // Not enough parameters
+    if(cmds.length < 2)
+    {
+      this.print(cmds[0] + ": missing file path");
+      this.setInputEnabled(true);
+      return -1;
+    }
+
+    var file = this.getFile(cmds[1]);
+
+    if(file){
+      var htmlCode =
+       '<object style="width: 90vw; height: 90vh;" type="application/pdf" data="./Files/' + this.workingDirPath + '/' + file.name + '" id="pdf_content" internalinstanceid="3"> \
+        <p>PDF unable to be displayed. File can be accessed <a href="' + file.download_url + '">here</a>.</p> \
+        </object>'
+      this.showModalWithHTML(htmlCode);
+      this.setInputEnabled(true);
+    }else{
+      // Print out error
+      this.print(cmds[0] + ": " + cmds[1] + ": No such file or directory");
+      this.setInputEnabled(true);
+      return -1;
+    }
+
+  },
+
+  // pdfview command implementation
+  cmd_imgview: function(cmds){
+    // Not enough parameters
+    if(cmds.length < 2)
+    {
+      this.print(cmds[0] + ": missing file path");
+      this.setInputEnabled(true);
+      return -1;
+    }
+
+    var file = this.getFile(cmds[1]);
+
+    if(file){
+      var htmlCode = '<img style="max-width: 90vw; max-height: 90vh;" src="./Files/' + this.workingDirPath + '/' + file.name + '" alt="' + file.name + '" />';
+      this.showModalWithHTML(htmlCode);
+      this.setInputEnabled(true);
+    }else{
+      // Print out error
+      this.print(cmds[0] + ": " + cmds[1] + ": No such file or directory");
+      this.setInputEnabled(true);
+      return -1;
+    }
+
+  },
+
   // ls command implementation
   cmd_ls: function(cmds){
-    /*
-    <div id="pdf">
-      <object width="400" height="500" type="application/pdf" data="Files/resume.pdf" id="pdf_content" internalinstanceid="3">
-        <p>Insert your error message here, if the PDF cannot be displayed.</p>
-      </object>
-    </div>
-    */
     /*
     var list = "";
     for(i in workingDirData)

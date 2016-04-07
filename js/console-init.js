@@ -10,14 +10,16 @@ window.onload = function() {
       fileDir: "https://api.github.com/repos/VipulKashyap/vipulkashyap.github.io/contents/Files",
       consoleDiv: "old-console-io",
       inputDiv: "curr-input-line",
-      inputStarterDiv: "input-starter"
+      inputStarterDiv: "input-starter",
+      modalDiv: "modal-view",
+      modalDataDiv: "modal-html"
   });
 
   myConsole.typeAndRunCmd("cat about_me.txt");
 
   myConsole.linkCommandToEvent("about-me-link", "click", "cat about_me.txt");
   myConsole.linkCommandToEvent("projects-link", "click", "cd Projects | ls");
-  myConsole.linkCommandToEvent("resume-link", "click", "cat resume.pdf");
+  myConsole.linkCommandToEvent("resume-link", "click", "pdfview resume.pdf");
   myConsole.linkCommandToEvent("github-link", "click", "go github");
   myConsole.linkCommandToEvent("linkedin-link", "click", "go linkedin");
 };
