@@ -176,6 +176,15 @@ td {
   padding-right: 0.1px;
 }
 
+/* Because ms has html standards implementation issues*/
+#curr-input-line p:first-child{
+  display: none;
+}
+#curr-input-line div:first-child{
+  display: none;
+}
+
+
 ::-webkit-scrollbar {
-    display: none;
+  display: none;
 }

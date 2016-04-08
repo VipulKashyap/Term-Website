@@ -48,6 +48,7 @@ var Console = function (prefs) {
   // http://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity
   document.documentElement.addEventListener("click", function(event) {
     that.inputDiv.focus();
+    that.inputDiv.innerHTML = that.inputDiv.textContent;
     var range = document.createRange();
     range.selectNodeContents(that.inputDiv);
     range.collapse(false);
@@ -57,13 +58,13 @@ var Console = function (prefs) {
   }, false);
 
   this.inputDiv.addEventListener("click", function (event) {
-    event.stopPropagation
+    event.stopPropagation();
   }, false);
 
   var links = document.getElementsByClassName("link");
   for (var i = 0; i < links.length; i++) {
     links[i].addEventListener("click", function (event) {
-      event.stopPropagation
+      event.stopPropagation();
     }, false);
   }
 
@@ -83,30 +84,33 @@ var Console = function (prefs) {
 Console.prototype = {
 
   getInputStarterString: function () {
-    return this.userId + '@vip:/web' + this.workingDirPath + '>  ';
+    return this.userId + "@vip:/web" + this.workingDirPath + ">  ";
   },
 
   makeInputDivVisible: function () {
     // add code to check if visible
     this.inputDiv.scrollIntoView();
+
+    // added because IE is too cool to function according to global web standards
+    this.inputDiv.focus();
   },
 
   setInputEnabled: function (state) {
     if(state)
     {
       this.inputDiv.setAttribute("contenteditable", "true");
-      this.inputDiv.style.display = 'inline-block';
-      this.inputStarterDiv.style.display = 'inline-block';
+      this.inputDiv.style.display = "inline-block";
+      this.inputStarterDiv.style.display = "inline-block";
       this.makeInputDivVisible();
     }else{
       this.inputDiv.setAttribute("contenteditable", "false");
-      this.inputDiv.style.display = 'none';
-      this.inputStarterDiv.style.display = 'none';
+      this.inputDiv.style.display = "none";
+      this.inputStarterDiv.style.display = "none";
     }
   },
 
   print: function (data) {
-    this.consoleDiv.appendChild(document.createElement('br'));
+    this.consoleDiv.appendChild(document.createElement("br"));
     this.consoleDiv.appendChild(document.createTextNode(data + " "));
   },
 
@@ -125,7 +129,7 @@ Console.prototype = {
   submitInput: function () {
     this.print(this.inputStarterString + this.inputDiv.textContent);
 
-    var cmd = this.inputDiv.textContent.replace(/\s\s+/g, ' ').trim();
+    var cmd = this.inputDiv.textContent.replace(/\s\s+/g, " ").trim();
     this.inputDiv.innerHTML = "";
 
     this.makeInputDivVisible();
@@ -156,6 +160,22 @@ Console.prototype = {
     .fail(function() {
       callback("File retrieval failed!");
     });
+  },
+
+  requestFilePrefetch: function (path) {
+    try {
+      var prefetch_link = document.createElement("link");
+      prefetch_link.setAttribute("rel", "prefetch");
+      prefetch_link.setAttribute("href", path);
+      prefetch_link.setAttribute("display", "none");
+      document.body.appendChild(prefetch_link);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', "./Files/" + temp[1], false);
+      xhr.send(null);
+    }catch(err) {
+      // Guess we aren't prefetching then
+    }
   },
 
   linkCommandToEvent: function (id, eve, cmd) {
@@ -259,18 +279,8 @@ Console.prototype = {
 
     // Prefetching based on parameters
     var temp = str.split(" ");
-    if(temp.length > 1){
-      /*
-      var prefetch_link = document.createElement("link");
-      prefetch_link.setAttribute("rel", "prefetch");
-      prefetch_link.setAttribute("href", "./Files/" + temp[1]);
-      prefetch_link.setAttribute("display", "none");
-      document.body.appendChild(prefetch_link);
-      */
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', "./Files/" + temp[1], false);
-      xhr.send(null);
+    if(temp.length > 1){   
+      this.requestFilePrefetch("./Files/" + temp[1]);
     }
 
     this.cmdAutoTyperCharPtr = 0;
@@ -339,7 +349,7 @@ Console.prototype = {
 
     if(file){
       var htmlCode =
-       '<object style="width: 90vw; height: 90vh;" type="application/pdf" data="./Files/' + this.workingDirPath + '/' + file.name + '" id="pdf_content" internalinstanceid="3"> \
+       '<object style="width: calc(95vw - 4em); height: calc(95vh - 4em);" type="application/pdf" data="./Files/' + this.workingDirPath + '/' + file.name + '" id="pdf_content" internalinstanceid="3"> \
         <p>PDF unable to be displayed. File can be accessed <a href="' + file.download_url + '">here</a>.</p> \
         </object>'
       this.showModalWithHTML(htmlCode);
@@ -366,7 +376,7 @@ Console.prototype = {
     var file = this.getFile(cmds[1]);
 
     if(file){
-      var htmlCode = '<img style="max-width: 90vw; max-height: 90vh;" src="./Files/' + this.workingDirPath + '/' + file.name + '" alt="' + file.name + '" />';
+      var htmlCode = '<img style="max-width: calc(95vw - 4em); max-height: calc(95vh - 4em);" src="./Files/' + this.workingDirPath + '/' + file.name + '" alt="' + file.name + '" />';
       this.showModalWithHTML(htmlCode);
       this.setInputEnabled(true);
     }else{
