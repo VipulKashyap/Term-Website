@@ -20,8 +20,9 @@ var Console = function (prefs) {
   }, false);
   this.modalDiv.appendChild(modalCloseButton);
 
+  this.startingDir = "Files";
   this.workingDirPath = '';
-  this.workingDirData = {};
+  this.workingDirData = fileDB;
   this.diskIterationStack = [];
   this.colCount = 4;
 
@@ -29,18 +30,6 @@ var Console = function (prefs) {
   this.cmdAutotyperTimer;
 
   this.inputStarterString = this.getInputStarterString();
-
-  this.ajaxCall({
-      type: "GET",
-      url: this.fileDir,
-      dataType: "json",
-      success: function(data) {
-        that.workingDirData = data;
-      },
-      error: function() {
-        that.print("Failed to get file list from server.");
-      }
-  });
 
   this.inputStarterDiv.innerHTML = this.inputStarterString;
   this.inputDiv.focus();
@@ -166,7 +155,10 @@ Console.prototype = {
     for(var i in this.workingDirData)
     {
       if(this.workingDirData[i].name == name && this.workingDirData[i].type == "file")
+      {
+        this.workingDirData[i].path = this.startingDir + (this.workingDirPath == "") ? "" : (this.workingDirPath + "/");
         return this.workingDirData[i];
+      }
     }
     return undefined;
   },
@@ -175,7 +167,10 @@ Console.prototype = {
     for(var i in this.workingDirData)
     {
       if(this.workingDirData[i].name == name && this.workingDirData[i].type == "dir")
+      {
+        this.workingDirData[i].path = this.startingDir + (this.workingDirPath == "") ? "" : (this.workingDirPath + "/");
         return this.workingDirData[i];
+      }
     }
     return undefined;
   },
@@ -268,16 +263,7 @@ Console.prototype = {
 
   getFileCommandRunner: function (file)
   {
-    var cmd;
-    switch(file.type)
-    {
-      case "dir":
-        cmd = "cd " + file.name;
-        break;
-      case "file":
-        cmd = "cat " + file.name;
-        break;
-    }
+    var cmd = file.prog + " " + file.name;
     var that = this;
     return function(){
       that.typeAndRunCmd(cmd);
@@ -344,7 +330,7 @@ Console.prototype = {
 
     if(file){
       // Get file data via ajax and print data to console
-      this.getFileContent(file.download_url,
+      this.getFileContent(file.path + file.name,
         function(data){
             that.print("");
             var span = document.createElement("span");
@@ -434,17 +420,38 @@ Console.prototype = {
     var perCol = Math.ceil(this.workingDirData.length/this.colCount);
     var ptr = 0;
 
+    var searchDir = this.workingDirData;
+    if(cmds.length > 1)
+    {
+      var direc = this.getDir(cmds[1]);
+      if(direc)
+      {
+        searchDir = direc.data;
+      }else{
+        this.print(cmds[0] + ": invalid directory path");
+        this.setInputEnabled(true);
+        return -1;
+      }
+    }
+
+    if(searchDir.length == 0)
+    {
+      this.print("Folder is empty");
+      this.setInputEnabled(true);
+      return 0;
+    }
+
     var table = document.createElement('table');
     var tr = document.createElement('tr');
     for(var i = 0; i < this.colCount; i++)
     {
       var td = document.createElement('td');
-      for(var j = 0; j < perCol && ptr < this.workingDirData.length; j++)
+      for(var j = 0; j < perCol && ptr < searchDir.length; j++)
       {
         var div = document.createElement('div');
-        div.appendChild(document.createTextNode(this.workingDirData[ptr].name));
-        div.setAttribute("class", "console-link " + this.workingDirData[ptr].type);
-        div.addEventListener("click", this.getFileCommandRunner(this.workingDirData[ptr]), false);
+        div.appendChild(document.createTextNode(searchDir[ptr].name));
+        div.setAttribute("class", "console-link " + searchDir[ptr].type);
+        div.addEventListener("click", this.getFileCommandRunner(searchDir[ptr]), false);
         td.appendChild(div);
         ptr++;
       }
@@ -486,24 +493,12 @@ Console.prototype = {
 
           if(file){
             // Move to directory
-            this.ajaxCall({
-                type: "GET",
-                url: file.url,
-                dataType: "json",
-                success: function(result) {
-                  that.diskIterationStack.push({'wd_path': that.workingDirPath, 'wd_data': that.workingDirData});
-                  that.workingDirPath += "/" + cmds[1];
-                  that.workingDirData = result;
-                  that.inputStarterString = that.getInputStarterString();
-                  that.inputStarterDiv.innerHTML = that.inputStarterString;
-                },
-                error: function() {
-                  that.print("Failed to get file list from server.");
-                }
-            })
-            .always(function() {
-              that.setInputEnabled(true);
-            });
+            that.diskIterationStack.push({'wd_path': that.workingDirPath, 'wd_data': that.workingDirData});
+            that.workingDirPath += "/" + cmds[1];
+            that.workingDirData = file.data;
+            that.inputStarterString = that.getInputStarterString();
+            that.inputStarterDiv.innerHTML = that.inputStarterString;
+            that.setInputEnabled(true);
             return 0;
           } else {
             // Print out error

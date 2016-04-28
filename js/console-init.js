@@ -7,7 +7,7 @@ var myConsole;
 window.onload = function() {
   myConsole = new Console({
       userId: "guest",
-      fileDir: "https://api.github.com/repos/VipulKashyap/vipulkashyap.github.io/contents/Files",
+      fileDB: fileDB,
       consoleDiv: "old-console-io",
       inputDiv: "curr-input-line",
       inputStarterDiv: "input-starter",
