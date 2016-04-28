@@ -30,7 +30,7 @@ var Console = function (prefs) {
 
   this.inputStarterString = this.getInputStarterString();
 
-  $.ajax({
+  this.ajaxCall({
       type: "GET",
       url: this.fileDir,
       dataType: "json",
@@ -82,6 +82,31 @@ var Console = function (prefs) {
 };
 
 Console.prototype = {
+  ajaxCall: function(opts) {
+    var xmlhttp = new XMLHttpRequest();
+    var jsonReq = (opts.dataType == "json");
+
+    if(opts.dataType && !jsonReq)
+    {
+      xmlhttp.responseType = opts.dataType;
+    }
+    
+    xmlhttp.onreadystatechange = function(){
+      if(xmlhttp.readyState == 4)
+      {
+        if(xmlhttp.status == 200)
+        {
+          var toRet = jsonReq ? JSON.parse(xmlhttp.responseText) : xmlhttp.responseText;
+          opts.success(toRet);
+        }
+        else
+          opts.error(xmlhttp.statusText);
+      }
+    }
+    
+    xmlhttp.open(opts.type, opts.url, true);
+    xmlhttp.send();
+  },
 
   getInputStarterString: function () {
     return this.userId + "@vip:/web" + this.workingDirPath + ">  ";
@@ -156,10 +181,13 @@ Console.prototype = {
   },
 
   getFileContent: function (path, callback) {
-    $.get(path , callback)
-    .fail(function() {
-      callback("File retrieval failed!");
-    });
+    this.ajaxCall({type: "GET",
+              url: path , 
+              success: callback, 
+              error:  function() {
+                        callback("File retrieval failed!");
+                      }
+              });
   },
 
   requestFilePrefetch: function (path) {
@@ -458,7 +486,7 @@ Console.prototype = {
 
           if(file){
             // Move to directory
-            $.ajax({
+            this.ajaxCall({
                 type: "GET",
                 url: file.url,
                 dataType: "json",
