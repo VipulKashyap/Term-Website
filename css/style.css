@@ -23,168 +23,167 @@ Colors
 */
 
 * {
-  margin: 0;
-  padding: 0;
-  color: #00CC00;
+    margin: 0;
+    padding: 0;
+    color: #00CC00;
 }
 
 html {
-  padding: 0.6em;
-  background-color: black;
-  font-family: 'Share Tech Mono', monospace;
+    padding: 0.6em;
+    background-color: black;
+    font-family: 'Share Tech Mono', monospace;
 }
 
 table {
-  display: inline-block;
-  font-size: 1em;
-  line-height: 1.4em;
-  margin-bottom: -0.4em;
+    display: inline-block;
+    font-size: 1em;
+    line-height: 1.4em;
+    margin-bottom: -0.4em;
 }
 
 td {
-  width: 13em;
-  vertical-align: top;
+    width: 13em;
+    vertical-align: top;
 }
 
 #modal-view {
-  display: none;
-  text-align: center;
-  position: fixed;
-  z-index: 9999;
-  margin-left: auto;
-  margin-right: auto;
-  background-color: black;
-  border: solid #00CC00;
-  min-width: 18em;
-  padding: 0.5em;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  margin: auto;
-  margin-top: -0.01em;
+    display: none;
+    text-align: center;
+    position: fixed;
+    z-index: 9999;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: black;
+    border: solid #00CC00;
+    min-width: 18em;
+    padding: 0.5em;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: auto;
+    margin-top: -0.01em;
 }
 
 .modal-button {
-  padding: 0.3em;
-  margin: 0.6em;
-  margin-bottom: 0.4em;
-  min-width: 5em;
-  background: black;
-  border: solid #00CC00;
-  font: inherit;
+    padding: 0.3em;
+    margin: 0.6em;
+    margin-bottom: 0.4em;
+    min-width: 5em;
+    background: black;
+    border: solid #00CC00;
+    font: inherit;
 }
 
 .modal-button:hover {
-  background-color: #00CC00;
-  color: black;
+    background-color: #00CC00;
+    color: black;
 }
 
 .console-link:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .console-list {
-  -webkit-columns: 4 13em; /* Chrome, Safari, Opera */
-  -moz-columns: 4 13em; /* Firefox */
-  columns: 4 13em;
+    -webkit-columns: 4 13em;
+    /* Chrome, Safari, Opera */
+    -moz-columns: 4 13em;
+    /* Firefox */
+    columns: 4 13em;
 }
 
-.console-link .file {
+.console-link .file {}
 
-}
-
-.console-link .folder {
-
-}
+.console-link .folder {}
 
 #intro {
-  font-family: monospace, 'Share Tech Mono';
-  margin: 0 auto;
-  text-align: center;
+    font-family: monospace, 'Share Tech Mono';
+    margin: 0 auto;
+    text-align: center;
 }
 
 #intro-center {
-  display: inline-block;
-  text-align: justify;
+    display: inline-block;
+    text-align: justify;
 }
 
 #intro-name {
-  white-space: pre;
-  font-size: 1.0em;
-  line-height: 1.0em;
+    white-space: pre;
+    font-size: 1.0em;
+    line-height: 1.0em;
 }
 
 #intro-links {
-  font-size: 1em;
-  line-height: 1.4em;
-  text-align: center;
-  padding: 10px;
+    font-size: 1em;
+    line-height: 1.4em;
+    text-align: center;
+    padding: 10px;
 }
 
 .cmd-output {
-  font-family: 'Share Tech Mono', monospace;
-  white-space: pre;
-  display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    white-space: pre;
+    display: inline-block;
 }
 
 #intro-links a {
-  font-family: 'Share Tech Mono', monospace;
-  text-decoration: none;
-  margin: 0 5px;
+    font-family: 'Share Tech Mono', monospace;
+    text-decoration: none;
+    margin: 0 5px;
 }
 
 .link {
-  cursor: pointer;
-  margin: 0 10px;
+    cursor: pointer;
+    margin: 0 10px;
 }
 
 #intro-ucla {
-  white-space: pre;
-  font-size: 0.5em;
-  line-height: 0.9em;
+    white-space: pre;
+    font-size: 0.5em;
+    line-height: 0.9em;
 }
 
 #console {
-  font-family: 'Share Tech Mono', monospace;
-  width: 100%;
-  height: 100%;
-  color: inherit;
-  background-color: inherit;
-  border: none;
+    font-family: 'Share Tech Mono', monospace;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    background-color: inherit;
+    border: none;
 }
 
-#old-console-io, #curr-input-line, #input-starter {
-  font-size: 1em;
-  line-height: 1.4em;
-  display: inline-block;
+#old-console-io,
+#curr-input-line,
+#input-starter {
+    font-size: 1em;
+    line-height: 1.4em;
+    display: inline-block;
 }
 
 #old-console-io {
-  max-height: 100vh;
+    max-height: 100vh;
 }
 
 #curr-input-line {
-  background-color: inherit;
-  color: inherit;
-  font-size: inherit;
-  font-family: inherit;
-
-  outline: none;
-  border: none;
-
-  /* Hack for chrome bug */
-  padding-right: 0.1px;
+    background-color: inherit;
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+    outline: none;
+    border: none;
+    /* Hack for chrome bug */
+    padding-right: 0.1px;
 }
 
 /* Because ms has html standards implementation issues*/
-#curr-input-line p:first-child{
-  display: none;
-}
-#curr-input-line div:first-child{
-  display: none;
+
+#curr-input-line p:first-child {
+    display: none;
 }
 
+#curr-input-line div:first-child {
+    display: none;
+}
 
 ::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
